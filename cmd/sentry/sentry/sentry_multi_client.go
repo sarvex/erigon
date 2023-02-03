@@ -370,7 +370,7 @@ func (cs *MultiClient) newBlockHashes66(ctx context.Context, req *proto_sentry.I
 			return fmt.Errorf("send header request: %w", err)
 		}
 	}
-	log.Debug("Received headers announcement", "peer", fmt.Sprintf("%x", ConvertH512ToPeerID(req.PeerId))[:8], "blockNums", fmt.Sprintf("%d", blockNums))
+	log.Debug("Received headers announcement", "peer", fmt.Sprintf("%x", ConvertH512ToPeerID(req.PeerId))[:20], "blockNums", fmt.Sprintf("%d", blockNums))
 	return nil
 }
 
@@ -403,7 +403,7 @@ func (cs *MultiClient) blockHeaders(ctx context.Context, pkt eth.BlockHeadersPac
 			if _, err := sentry.PeerUseless(ctx, &outreq, &grpc.EmptyCallOption{}); err != nil {
 				return fmt.Errorf("sending peer useless request: %v", err)
 			}
-			log.Debug("Requested removal of peer for empty header response", "peerId", fmt.Sprintf("%x", ConvertH512ToPeerID(peerID))[:8])
+			log.Debug("Requested removal of peer for empty header response", "peerId", fmt.Sprintf("%x", ConvertH512ToPeerID(peerID))[:20])
 		*/
 		// No point processing empty response
 		return nil
@@ -435,7 +435,7 @@ func (cs *MultiClient) blockHeaders(ctx context.Context, pkt eth.BlockHeadersPac
 		blockNums = append(blockNums, int(number))
 	}
 	sort.Ints(blockNums)
-	log.Debug("Delivered headers", "peer", fmt.Sprintf("%x", ConvertH512ToPeerID(peerID))[:8], "blockNums", fmt.Sprintf("%d", blockNums))
+	log.Debug("Delivered headers", "peer", fmt.Sprintf("%x", ConvertH512ToPeerID(peerID))[:20], "blockNums", fmt.Sprintf("%d", blockNums))
 	if cs.Hd.POSSync() {
 		sort.Sort(headerdownload.HeadersReverseSort(csHeaders)) // Sorting by reverse order of block heights
 		tx, err := cs.db.BeginRo(ctx)

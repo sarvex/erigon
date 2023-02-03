@@ -454,6 +454,7 @@ func runPeer(
 			if _, err := io.ReadFull(msg.Payload, b); err != nil {
 				log.Error(fmt.Sprintf("%s: reading msg into bytes: %v", peerID, err))
 			}
+			log.Debug("NewBlockHashesMsg from", "peerId", peerID[:20], "name", peerInfo.peer.Name())
 			send(eth.ToProto[protocol][msg.Code], peerID, b)
 		case eth.NewBlockMsg:
 			if !hasSubscribers(eth.ToProto[protocol][msg.Code]) {
@@ -463,6 +464,7 @@ func runPeer(
 			if _, err := io.ReadFull(msg.Payload, b); err != nil {
 				log.Error(fmt.Sprintf("%s: reading msg into bytes: %v", peerID, err))
 			}
+			log.Debug("NewBlockMsg from", "peerId", peerID[:20], "name", peerInfo.peer.Name())
 			send(eth.ToProto[protocol][msg.Code], peerID, b)
 		case eth.NewPooledTransactionHashesMsg:
 			if !hasSubscribers(eth.ToProto[protocol][msg.Code]) {
@@ -744,7 +746,7 @@ func (ss *GrpcServer) PeerUseless(_ context.Context, req *proto_sentry.PeerUsele
 	peerInfo := ss.getPeer(peerID)
 	if ss.statusData != nil && peerInfo != nil && !peerInfo.peer.Info().Network.Static && !peerInfo.peer.Info().Network.Trusted {
 		ss.removePeer(peerID)
-		log.Debug("Removed useless peer", "peerId", fmt.Sprintf("%x", peerID)[:8], "name", peerInfo.peer.Name())
+		log.Debug("Removed useless peer", "peerId", fmt.Sprintf("%x", peerID)[:20], "name", peerInfo.peer.Name())
 	}
 	return &emptypb.Empty{}, nil
 }
