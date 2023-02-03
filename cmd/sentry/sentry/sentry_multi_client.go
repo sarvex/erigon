@@ -408,7 +408,7 @@ func (cs *MultiClient) blockHeaders(ctx context.Context, pkt eth.BlockHeadersPac
 		return fmt.Errorf("decode 2 BlockHeadersPacket66: %w", err)
 	}
 	// Extract headers from the block
-	//var blockNums []int
+	var blockNums []int
 	var highestBlock uint64
 	csHeaders := make([]headerdownload.ChainSegmentHeader, 0, len(pkt))
 	for _, header := range pkt {
@@ -427,10 +427,10 @@ func (cs *MultiClient) blockHeaders(ctx context.Context, pkt eth.BlockHeadersPac
 			Hash:      types.RawRlpHash(hRaw),
 			Number:    number,
 		})
-		//blockNums = append(blockNums, int(number))
+		blockNums = append(blockNums, int(number))
 	}
-	//sort.Ints(blockNums)
-	//log.Debug("Delivered headers", "peer",  fmt.Sprintf("%x", ConvertH512ToPeerID(peerID))[:8], "blockNums", fmt.Sprintf("%d", blockNums))
+	sort.Ints(blockNums)
+	log.Debug("Delivered headers", "peer", fmt.Sprintf("%x", ConvertH512ToPeerID(peerID))[:8], "blockNums", fmt.Sprintf("%d", blockNums))
 	if cs.Hd.POSSync() {
 		sort.Sort(headerdownload.HeadersReverseSort(csHeaders)) // Sorting by reverse order of block heights
 		tx, err := cs.db.BeginRo(ctx)
