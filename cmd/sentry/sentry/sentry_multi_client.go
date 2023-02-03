@@ -330,12 +330,14 @@ func (cs *MultiClient) newBlockHashes66(ctx context.Context, req *proto_sentry.I
 	if cs.Hd.InitialCycle() && !cs.Hd.FetchingNew() {
 		return nil
 	}
-	//log.Info(fmt.Sprintf("NewBlockHashes from [%s]", ConvertH256ToPeerID(req.PeerId)))
+	//log.Debug(fmt.Sprintf("NewBlockHashes from [%s]", ConvertH256ToPeerID(req.PeerId)))
 	var request eth.NewBlockHashesPacket
 	if err := rlp.DecodeBytes(req.Data, &request); err != nil {
 		return fmt.Errorf("decode NewBlockHashes66: %w", err)
 	}
+	var blockNums []int
 	for _, announce := range request {
+		blockNums = append(blockNums, int(announce.Number))
 		cs.Hd.SaveExternalAnnounce(announce.Hash)
 		if cs.Hd.HasLink(announce.Hash) {
 			continue
@@ -368,6 +370,7 @@ func (cs *MultiClient) newBlockHashes66(ctx context.Context, req *proto_sentry.I
 			return fmt.Errorf("send header request: %w", err)
 		}
 	}
+	log.Debug("Received headers announcement", "peer", fmt.Sprintf("%x", ConvertH512ToPeerID(req.PeerId))[:8], "blockNums", fmt.Sprintf("%d", blockNums))
 	return nil
 }
 
