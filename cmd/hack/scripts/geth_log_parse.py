@@ -50,7 +50,7 @@ with open('/Users/alexeyakhunov/workspace/src/github.com/ledgerwatch/erigon/badg
             ne = l.index(' ', ns)
             block = int(l[ns:ne])
             if block > last_block:
-                if not last_reset is None:
+                if last_reset is not None:
                     seconds_since_reset = (dt - last_reset).total_seconds()
                 print(block/1000000.0, ',', \
                     (seconds_before_reset + seconds_since_reset)/3600.0, ',', \
